@@ -4,7 +4,11 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET","POST"])
 def index():
-    return("<h2>Hi</h1>")
+    return(render_template("index.html"))
+
+@app.route("/", methods=["GET","POST"])
+def main():
+    return(render_template("main.html"))
 
 if __name__ == "__main__":
     app.run()
