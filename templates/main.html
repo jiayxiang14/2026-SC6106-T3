@@ -1,15 +1,24 @@
 <head>
-    <meta name = "viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
         <h2>Main</h2>
+
+        <!-- Transfer Money -->
         <form action="/transferMoney" method="post">
-            <input type = "submit" value="Transfer Money">
+            <input type="submit" value="Transfer Money">
         </form> 
+
+        <!-- Deposit Money -->
+        <form action="/depositMoney" method="post">
+            <input type="submit" value="Deposit Money">
+        </form> 
+
+        <!-- Exit -->
         <form action="/" method="post">
-            <input type = "submit" value="Exit">
+            <input type="submit" value="Exit">
         </form> 
     </div>
 </body>
