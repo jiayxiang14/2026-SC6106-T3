@@ -1,0 +1,79 @@
+<head>
+    <meta name = "viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
+</head>
+<body>
+    <div class="container">
+    <h2>Simple Storage DApp</h2>
+
+    <input type="text" id="messageInput" placeholder="Enter message">
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <button onclick="setMessage()">Set Message</button>
+    <button onclick="getMessage()">Get Message</button>
+
+    <p id="output"></p>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        let provider;
+        let signer;
+        let contract;
+
+        const contractAddress = "0xd0a8f0edc994c16de9fbb4bee0fb6f6726be29e4";
+
+        const contractABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_message",
+				"type": "string"
+			}
+		],
+		"name": "setMessage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMessage",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+        async function connectWallet() {
+            if (window.ethereum) {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner();
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                document.getElementById("output").innerText = "Wallet connected!";
+            } else {
+                alert("Please install MetaMask");
+            }
+        }
+
+        async function setMessage() {
+            const msg = document.getElementById("messageInput").value;
+            const tx = await contract.setMessage(msg);
+            await tx.wait();
+            document.getElementById("output").innerText = "Message saved!";
+        }
+
+        async function getMessage() {
+            const msg = await contract.getMessage();
+            document.getElementById("output").innerText = "Stored Message: " + msg;
+        }
+    </script>
+
+    </div>
+</body>
