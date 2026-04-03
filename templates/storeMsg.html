@@ -1,79 +1,83 @@
 <head>
-    <meta name = "viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
 </head>
 <body>
     <div class="container">
-    <h2>Simple Storage DApp</h2>
+        <h2>Simple Storage DApp</h2>
 
-    <input type="text" id="messageInput" placeholder="Enter message">
-    <button onclick="connectWallet()">Connect Wallet</button>
-    <button onclick="setMessage()">Set Message</button>
-    <button onclick="getMessage()">Get Message</button>
+        <input type="text" id="messageInput" placeholder="Enter message">
+        <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+        <button class="btn" onclick="setMessage()">Set Message</button>
+        <button class="btn" onclick="getMessage()">Get Message</button>
 
-    <p id="output"></p>
+        <form action="/main" method="post">
+            <input type="submit" value="Main">
+        </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script>
-        let provider;
-        let signer;
-        let contract;
+        <p id="output"></p>
 
-        const contractAddress = "0xdbb92462332b44c921dfa0b192d060986d91d411";
+        <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+        <script>
+            let web3;
+            let contract;
 
-        const contractABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_message",
-				"type": "string"
-			}
-		],
-		"name": "setMessage",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getMessage",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-];
+            const contractAddress = "0xdbb92462332b44c921dfa0b192d060986d91d411";
+            const contractABI = [
+                {
+                    "inputs": [
+                        {
+                            "internalType": "string",
+                            "name": "_message",
+                            "type": "string"
+                        }
+                    ],
+                    "name": "setMessage",
+                    "outputs": [],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "getMessage",
+                    "outputs": [
+                        {
+                            "internalType": "string",
+                            "name": "",
+                            "type": "string"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ];
 
-        async function connectWallet() {
-            if (window.ethereum) {
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                signer = provider.getSigner();
-                contract = new ethers.Contract(contractAddress, contractABI, signer);
-                document.getElementById("output").innerText = "Wallet connected!";
-            } else {
-                alert("Please install MetaMask");
+            async function connectWallet() {
+                web3 = new Web3(Web3.givenProvider);
+                const accounts = await web3.eth.requestAccounts();
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+                document.getElementById("output").innerText = "Wallet connected: " + accounts[0];
             }
-        }
 
-        async function setMessage() {
-            const msg = document.getElementById("messageInput").value;
-            const tx = await contract.setMessage(msg);
-            await tx.wait();
-            document.getElementById("output").innerText = "Message saved!";
-        }
+            async function setMessage() {
+                if (!contract) {
+                    document.getElementById("output").innerText = "Please connect to Wallet first.";
+                    return;
+                }
+                const accounts = await web3.eth.getAccounts();
+                const msg = document.getElementById("messageInput").value;
+                await contract.methods.setMessage(msg).send({ from: accounts[0] });
+                document.getElementById("output").innerText = "Message saved!";
+            }
 
-        async function getMessage() {
-            const msg = await contract.getMessage();
-            document.getElementById("output").innerText = "Stored Message: " + msg;
-        }
-    </script>
-
+            async function getMessage() {
+                if (!contract) {
+                    document.getElementById("output").innerText = "Please connect to Wallet first.";
+                    return;
+                }
+                const msg = await contract.methods.getMessage().call();
+                document.getElementById("output").innerText = "Stored Message: " + msg;
+            }
+        </script>
     </div>
 </body>
