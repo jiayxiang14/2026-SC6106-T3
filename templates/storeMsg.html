@@ -22,35 +22,35 @@
             let web3;
             let contract;
 
-            const contractAddress = "0xdbb92462332b44c921dfa0b192d060986d91d411";
+            const contractAddress = "0x80975ba28e54dca61444d380dff5a342f0b00990";
             const contractABI = [
-                {
-                    "inputs": [
-                        {
-                            "internalType": "string",
-                            "name": "_message",
-                            "type": "string"
-                        }
-                    ],
-                    "name": "setMessage",
-                    "outputs": [],
-                    "stateMutability": "nonpayable",
-                    "type": "function"
-                },
-                {
-                    "inputs": [],
-                    "name": "getMessage",
-                    "outputs": [
-                        {
-                            "internalType": "string",
-                            "name": "",
-                            "type": "string"
-                        }
-                    ],
-                    "stateMutability": "view",
-                    "type": "function"
-                }
-            ];
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_message",
+				"type": "string"
+			}
+		],
+		"name": "setMessage",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMessage",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
 
             async function connectWallet() {
                 web3 = new Web3(Web3.givenProvider);
