@@ -1,28 +1,27 @@
 <head>
-    <meta name = "viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="stylesheet" href="{{url_for('static',filename='styles.css')}}">
 </head>
+
 <body>
-    <div class="container">
-        <h2>Transfer Money</h2>
-        <input type="text" id="payer" placeholder="Enter Payer Address">
-        <input type="text" id="payee" placeholder="Enter Payee Address">
-        <input type="text" id="amount" placeholder="Enter Payer Amount">
-        <button class="btn" onclick="transfer()">Transfer</button>
-        <button class="btn" onclick="transaction()">View Transaction</button>
+<div class="container">
+    <h2>Transaction Logs</h2>
 
-        <form action="/main" method="post">
-            <input type = "submit" value="Main">
-        </form>
+    <button class="btn" onclick="connect()">Connect Wallet</button>
+    <button class="btn" onclick="getLogs()">View Logs</button>
 
-        <p id="view_payer"></p>
-        <p id="view_payee"></p>
-        <p id="view_amount"></p>
+    <p id="output"></p>
 
-        <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
-        <script>
-            const contractAddress = "0xeeb62ac8bcdb24d039e6d05acb6f3a2e5d3d2064";
-            const contractABI = [
+    <form action="/main" method="post">
+        <input type="submit" value="Main">
+    </form>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+
+<script>
+const contractAddress = "0xeeb62ac8bcdb24d039e6d05acb6f3a2e5d3d2064";
+
+const contractABI = [
 	{
 		"inputs": [],
 		"name": "deleteLogs",
@@ -263,25 +262,31 @@
 	}
 ];
 
-        const web3 = new Web3(Web3.givenProvider);
-        const contract = new web3.eth.Contract(contractABI,contractAddress);
+let web3;
+let contract;
 
-        async function transfer(){
-            const accounts = await web3.eth.requestAccounts();
-            const payer = document.getElementById("payer").value;
-            const payee = document.getElementById("payee").value;
-            const amount = document.getElementById("amount").value;
-            console.log(payer,payee,amount);
+async function connect(){
+    web3 = new Web3(Web3.givenProvider);
+    const accounts = await web3.eth.requestAccounts();
+    contract = new web3.eth.Contract(contractABI, contractAddress);
 
-            await contract.methods.weixin(payer,payee,amount).send({from:accounts[0]});
-        }
+    document.getElementById("output").innerText = "Wallet Connected: " + accounts[0];
+}
 
-         async function transaction(){
-            const result = await contract.methods.checkTransaction().call();
-            document.getElementById('view_payer').innerText = "Payer: " + result[0];
-            document.getElementById('view_payee').innerText = "Payee: " + result[1];
-            document.getElementById('view_amount').innerText = "Amount: " + result[2];
-        }
-        </script>
-    </div>
+async function getLogs(){
+    const result = await contract.methods.getLogs().call();
+
+    let text = "";
+
+    for(let i=0;i<result.length;i++){
+        text += "User: " + result[i].user + "\n";
+        text += "Action: " + result[i].action + "\n";
+        text += "Amount: " + result[i].amount + "\n";
+        text += "----------------------\n";
+    }
+
+    document.getElementById("output").innerText = text || "No logs found";
+}
+</script>
+</div>
 </body>

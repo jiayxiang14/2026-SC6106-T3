@@ -22,5 +22,13 @@ def depositMoney():
 def storeMessage():
     return render_template("storeMsg.html")
 
+@app.route("/logs", methods=["GET","POST"])
+def logs():
+    return render_template("logs.html")
+
+@app.route("/deleteLogs", methods=["POST"])
+def deleteLogs():
+    return render_template("deletelogs.html")
+
 if __name__ == "__main__":
         app.run()
